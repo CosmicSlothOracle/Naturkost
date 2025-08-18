@@ -55,6 +55,7 @@
     .navlinks a{opacity:.9; padding:.35rem .4rem; border-bottom:2px solid transparent}
     .navlinks a:hover{opacity:1; border-color:var(--accent)}
     .nav .spacer{height:1px}
+    .header-cta{justify-self:end}
     .cta{display:inline-block; padding:.72rem 1rem; border:2px solid currentColor; border-radius:999px; font-weight:700; color:inherit}
     .cta:hover{background:var(--surface); color:var(--col-2)}
 
@@ -103,11 +104,13 @@
       header{position:sticky}
       .hero{padding:42px 0 28px}
       .section{padding:48px 0}
-      .nav{grid-template-columns:auto 1fr auto}
+      .nav{grid-template-columns:1fr 1fr}
       .nav-toggle{display:inline-block}
       .navlinks{display:none; justify-self:stretch; gap:14px}
       .navlinks.show{display:flex; flex-direction:column; position:absolute; top:100%; left:0; right:0; background:var(--surface); border-bottom:1px solid var(--line); padding:10px 20px}
-      header .header-cta{display:none}
+      .brand{display:none}
+      .header-cta{display:block; grid-column:1; justify-self:start}
+      #navToggle{grid-column:2; justify-self:end}
       .cta{min-height:44px; padding:.72rem 1.1rem}
       .panel, .desc, .lead{color:#000}
       .duo{grid-template-columns:1fr}
@@ -145,6 +148,7 @@
         <img class="brand-logo" src="https://link.storjshare.io/raw/jwpgc4iipvhkssfzzusi6sq43czq/naturkost/bunteburger.png" alt="Naturkost Logo" />
         <span class="brand-text"><span class="brand-title">Naturkost</span><span class="brand-sub">Bunte Burger</span></span>
       </a>
+      <div class="header-cta"><a class="cta" href="#reservierung">Tisch reservieren</a></div>
       <button id="navToggle" class="nav-toggle" aria-expanded="false" aria-controls="mainNav">Menü</button>
       <nav id="mainNav" class="navlinks" aria-label="Hauptnavigation">
         <a href="#speisekarte">Speisekarte</a>
@@ -152,7 +156,7 @@
         <a href="#ueber">Über uns</a>
         <a href="#kontakt">Kontakt</a>
       </nav>
-      <div class="spacer" style="text-align:right"><a class="cta" href="#reservierung">Tisch reservieren</a></div>
+      <div class="spacer" style="text-align:right"></div>
     </div>
   </header>
 
