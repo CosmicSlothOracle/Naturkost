@@ -54,6 +54,7 @@
     .nav .spacer{height:1px}
     .cta{display:inline-block; padding:.72rem 1rem; border:2px solid currentColor; border-radius:999px; font-weight:700; color:inherit}
     .cta:hover{background:var(--surface); color:var(--col-2)}
+    .nav-toggle{display:none}
 
     /* --- Hero Illustration: Modernist architecture + palms + pool --- */
     .hero{position:relative; padding:88px 0 64px; overflow:hidden}
@@ -88,24 +89,23 @@
       .nav{grid-template-columns:1fr; justify-items:center}
       .navlinks{justify-self:center}
       .brand img.brand-logo{height:32px}
-      .scene{height:420px}
-      .villa{width:92vw}
       .menu .item{grid-column:span 12}
     }
     @media (max-width: 680px){
       header{position:sticky}
       .hero{padding:56px 0 36px}
-      .scene{height:320px}
-      .palm{height:170px; bottom:86px}
-      .pool{height:96px}
       .section{padding:56px 0}
-      .navlinks{gap:12px}
+      .nav{grid-template-columns:auto 1fr auto}
+      .nav-toggle{display:inline-block; padding:.6rem .9rem; border:2px solid currentColor; border-radius:12px; background:transparent}
+      .navlinks{display:none; gap:12px}
+      .navlinks.show{display:flex; flex-direction:column; align-items:center; padding:10px 0}
+      :root{ --text:#000; }
+      .panel, .desc, .lead{ color:#000; }
+      .cta{ min-height:44px; padding:.72rem 1.1rem; }
     }
     @media (max-width: 420px){
-      .scene{height:280px}
-      .palm{height:140px; bottom:76px}
       .container{padding:0 14px}
-      h1{font-size:clamp(32px,8vw,56px)}
+      h1{font-size:clamp(28px,7.4vw,44px)}
     }
     /* --- Intro video overlay (all viewports) --- */
     #intro{position:fixed; inset:0; z-index:1000; display:none; background:var(--bg-1)}
@@ -117,14 +117,16 @@
     .brand-title{font-weight:700; color:var(--surface)}
     .brand-sub{font-weight:700; color:var(--col-1); font-size:.9rem}
     .enter-hint{position:absolute; left:50%; bottom:24px; transform:translateX(-50%); color:var(--surface); font-weight:700; padding:.6rem .9rem; border:2px solid var(--surface); border-radius:999px; animation:pulse 1.4s ease-in-out infinite}
+    #skipIntro{position:absolute; left:50%; bottom:74px; transform:translateX(-50%); color:var(--surface); font-weight:700; padding:.6rem .9rem; border:2px solid var(--surface); border-radius:999px}
     .enter-hint.hide{opacity:0; transition:opacity .2s ease}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
   </style>
 </head>
 <body>
   <div id="intro" aria-hidden="true">
-    <video id="introVid" muted playsinline preload="auto" src="https://link.storjshare.io/raw/jxnzlo73fa2bjuzrostia4jl2oka/naturkost/intro.webm"></video>
-    <div id="enterHint" class="enter-hint">Tab to enter</div>
+    <video id="introVid" muted playsinline preload="metadata" src="https://link.storjshare.io/raw/jxnzlo73fa2bjuzrostia4jl2oka/naturkost/intro.webm"></video>
+    <div id="enterHint" class="enter-hint">Tab drücken zum Start</div>
+    <button id="skipIntro" type="button">Überspringen</button>
   </div>
   <!-- Header symmetrical -->
   <header>
@@ -134,13 +136,13 @@
         <img class="brand-logo" src="https://link.storjshare.io/raw/jwpgc4iipvhkssfzzusi6sq43czq/naturkost/bunteburger.png" alt="Naturkost Logo" />
         <span class="brand-text"><span class="brand-title">Naturkost</span><span class="brand-sub">Bunte Burger</span></span>
       </a>
-      <nav class="navlinks" aria-label="Hauptnavigation">
+      <nav id="mainNav" class="navlinks" aria-label="Hauptnavigation">
         <a href="#speisekarte">Speisekarte</a>
         <a href="#reservierung">Reservierung</a>
         <a href="#ueber">Über uns</a>
         <a href="#kontakt">Kontakt</a>
       </nav>
-      <div class="spacer" style="text-align:right"><a class="cta" href="#reservierung">Tisch reservieren</a></div>
+      <button id="navToggle" class="nav-toggle" aria-expanded="false" aria-controls="mainNav" type="button">Menü</button>
     </div>
   </header>
 
@@ -256,22 +258,22 @@
       const introEl = document.getElementById('intro');
       const vid = document.getElementById('introVid');
       const hint = document.getElementById('enterHint');
+      const skipBtn = document.getElementById('skipIntro');
       if(!introEl || !vid) return;
 
       // Show overlay and lock scroll
       introEl.classList.add('show');
       document.body.classList.add('intro-active');
 
-      // Ensure first frame is visible
-      const onLoaded = ()=>{
-        try{ vid.currentTime = 0; }catch(e){}
-        vid.pause();
-      };
-      vid.addEventListener('loadeddata', onLoaded, {once:true});
-      vid.load();
+      // Hint copy per device
+      const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      if(hint) hint.textContent = isTouch ? 'Tippen zum Start' : 'Tab drücken zum Start';
 
       const start = ()=>{
         if(hint){ hint.classList.add('hide'); }
+        // load only when needed
+        vid.preload = 'auto';
+        try { vid.load(); } catch(e) {}
         const playPromise = vid.play();
         if(playPromise && typeof playPromise.then === 'function'){
           playPromise.catch(()=>{});
@@ -302,6 +304,23 @@
         document.body.classList.remove('intro-active');
       };
       vid.addEventListener('ended', endIntro, {once:true});
+      skipBtn?.addEventListener('click', endIntro);
+
+      // Respect reduced motion
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        endIntro();
+      }
+    })();
+
+    // Mobile nav toggle
+    (function initNav(){
+      const btn = document.getElementById('navToggle');
+      const nav = document.getElementById('mainNav');
+      if(!btn || !nav) return;
+      btn.addEventListener('click', ()=>{
+        const open = nav.classList.toggle('show');
+        btn.setAttribute('aria-expanded', String(open));
+      });
     })();
   </script>
 </body>
