@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#cac1f2" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#b2e9ca" media="(prefers-color-scheme: dark)">
   <title>Naturkost – Bunte Burger</title>
   <meta name="description" content="Pastell‑modernes Weblayout für Naturkost Café: klare Typografie, weiche Verläufe und warme Akzente." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,17 +46,17 @@
 
     /* --- Header (symmetrisch) --- */
     header{position:sticky; top:0; z-index:40; backdrop-filter:saturate(120%) blur(6px); background:var(--col-2); border-bottom:1px solid var(--line); color:var(--surface); box-shadow:0 2px 10px rgba(0,0,0,.06)}
-    .nav{display:grid; grid-template-columns:auto 1fr; align-items:center; gap:14px; padding:.7rem 0}
+    .nav{display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:14px; padding:.7rem 0}
     .brand{justify-self:start; display:flex; align-items:center; gap:.7rem}
     .brand svg{flex:0 0 36px}
     .brand span{font-weight:700; letter-spacing:.5px}
     .navlinks{justify-self:end; display:flex; gap:18px; flex-wrap:wrap}
+    .nav-toggle{display:none; padding:.6rem .9rem; border:2px solid currentColor; border-radius:12px; background:transparent; color:inherit}
     .navlinks a{opacity:.9; padding:.35rem .4rem; border-bottom:2px solid transparent}
     .navlinks a:hover{opacity:1; border-color:var(--accent)}
     .nav .spacer{height:1px}
     .cta{display:inline-block; padding:.72rem 1rem; border:2px solid currentColor; border-radius:999px; font-weight:700; color:inherit}
     .cta:hover{background:var(--surface); color:var(--col-2)}
-    .nav-toggle{display:none}
 
     /* --- Hero Illustration: Modernist architecture + palms + pool --- */
     .hero{position:relative; padding:88px 0 64px; overflow:hidden}
@@ -89,23 +91,25 @@
       .nav{grid-template-columns:1fr; justify-items:center}
       .navlinks{justify-self:center}
       .brand img.brand-logo{height:32px}
+      .scene{height:420px}
+      .villa{width:92vw}
       .menu .item{grid-column:span 12}
     }
     @media (max-width: 680px){
       header{position:sticky}
-      .hero{padding:56px 0 36px}
-      .section{padding:56px 0}
-      .nav{grid-template-columns:auto 1fr auto}
-      .nav-toggle{display:inline-block; padding:.6rem .9rem; border:2px solid currentColor; border-radius:12px; background:transparent}
-      .navlinks{display:none; gap:12px}
-      .navlinks.show{display:flex; flex-direction:column; align-items:center; padding:10px 0}
-      :root{ --text:#000; }
-      .panel, .desc, .lead{ color:#000; }
-      .cta{ min-height:44px; padding:.72rem 1.1rem; }
+      .hero{padding:42px 0 28px}
+      .section{padding:48px 0}
+      .nav{grid-template-columns:auto auto 1fr}
+      .nav-toggle{display:inline-block}
+      .navlinks{display:none; justify-self:start; gap:14px}
+      .navlinks.show{display:flex; flex-direction:column; width:100%; padding:8px 0}
+      .cta{min-height:44px; padding:.72rem 1.1rem}
+      .panel, .desc, .lead{color:#000}
     }
     @media (max-width: 420px){
       .container{padding:0 14px}
-      h1{font-size:clamp(28px,7.4vw,44px)}
+      h1{font-size:clamp(28px,7.5vw,44px)}
+      .brand img.brand-logo{height:30px}
     }
     /* --- Intro video overlay (all viewports) --- */
     #intro{position:fixed; inset:0; z-index:1000; display:none; background:var(--bg-1)}
@@ -117,16 +121,15 @@
     .brand-title{font-weight:700; color:var(--surface)}
     .brand-sub{font-weight:700; color:var(--col-1); font-size:.9rem}
     .enter-hint{position:absolute; left:50%; bottom:24px; transform:translateX(-50%); color:var(--surface); font-weight:700; padding:.6rem .9rem; border:2px solid var(--surface); border-radius:999px; animation:pulse 1.4s ease-in-out infinite}
-    #skipIntro{position:absolute; left:50%; bottom:74px; transform:translateX(-50%); color:var(--surface); font-weight:700; padding:.6rem .9rem; border:2px solid var(--surface); border-radius:999px}
     .enter-hint.hide{opacity:0; transition:opacity .2s ease}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
   </style>
 </head>
 <body>
   <div id="intro" aria-hidden="true">
-    <video id="introVid" muted playsinline preload="metadata" src="https://link.storjshare.io/raw/jxnzlo73fa2bjuzrostia4jl2oka/naturkost/intro.webm"></video>
+    <video id="introVid" muted playsinline preload="metadata" poster="https://link.storjshare.io/raw/jxnzlo73fa2bjuzrostia4jl2oka/naturkost/intro_poster.jpg" src="https://link.storjshare.io/raw/jxnzlo73fa2bjuzrostia4jl2oka/naturkost/intro.webm"></video>
     <div id="enterHint" class="enter-hint">Tab drücken zum Start</div>
-    <button id="skipIntro" type="button">Überspringen</button>
+    <button id="skipIntro" class="enter-hint" style="bottom:72px">Überspringen</button>
   </div>
   <!-- Header symmetrical -->
   <header>
@@ -136,13 +139,14 @@
         <img class="brand-logo" src="https://link.storjshare.io/raw/jwpgc4iipvhkssfzzusi6sq43czq/naturkost/bunteburger.png" alt="Naturkost Logo" />
         <span class="brand-text"><span class="brand-title">Naturkost</span><span class="brand-sub">Bunte Burger</span></span>
       </a>
+      <button id="navToggle" class="nav-toggle" aria-expanded="false" aria-controls="mainNav">Menü</button>
       <nav id="mainNav" class="navlinks" aria-label="Hauptnavigation">
         <a href="#speisekarte">Speisekarte</a>
         <a href="#reservierung">Reservierung</a>
         <a href="#ueber">Über uns</a>
         <a href="#kontakt">Kontakt</a>
       </nav>
-      <button id="navToggle" class="nav-toggle" aria-expanded="false" aria-controls="mainNav" type="button">Menü</button>
+      <div class="spacer" style="text-align:right"><a class="cta" href="#reservierung">Tisch reservieren</a></div>
     </div>
   </header>
 
@@ -258,22 +262,24 @@
       const introEl = document.getElementById('intro');
       const vid = document.getElementById('introVid');
       const hint = document.getElementById('enterHint');
-      const skipBtn = document.getElementById('skipIntro');
+      const skip = document.getElementById('skipIntro');
       if(!introEl || !vid) return;
 
       // Show overlay and lock scroll
       introEl.classList.add('show');
       document.body.classList.add('intro-active');
 
-      // Hint copy per device
-      const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      if(hint) hint.textContent = isTouch ? 'Tippen zum Start' : 'Tab drücken zum Start';
+      // Ensure first frame is visible
+      const onLoaded = ()=>{
+        try{ vid.currentTime = 0; }catch(e){}
+        vid.pause();
+      };
+      vid.addEventListener('loadeddata', onLoaded, {once:true});
 
       const start = ()=>{
         if(hint){ hint.classList.add('hide'); }
-        // load only when needed
         vid.preload = 'auto';
-        try { vid.load(); } catch(e) {}
+        vid.load();
         const playPromise = vid.play();
         if(playPromise && typeof playPromise.then === 'function'){
           playPromise.catch(()=>{});
@@ -298,28 +304,35 @@
 
       document.addEventListener('keydown', onKey);
       introEl.addEventListener('click', onClick);
+      if (skip) skip.addEventListener('click', ()=>{
+        cleanupInteractions();
+        endIntro();
+      });
+
+      // Accessibility: reduced motion
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+        endIntro();
+      }
+
+      // Adapt hint for touch
+      const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      if (hint){ hint.textContent = isTouch ? 'Tippen zum Start' : 'Tab drücken zum Start'; }
 
       const endIntro = ()=>{
         introEl.classList.remove('show');
         document.body.classList.remove('intro-active');
       };
       vid.addEventListener('ended', endIntro, {once:true});
-      skipBtn?.addEventListener('click', endIntro);
-
-      // Respect reduced motion
-      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        endIntro();
-      }
     })();
 
     // Mobile nav toggle
     (function initNav(){
-      const btn = document.getElementById('navToggle');
-      const nav = document.getElementById('mainNav');
-      if(!btn || !nav) return;
-      btn.addEventListener('click', ()=>{
-        const open = nav.classList.toggle('show');
-        btn.setAttribute('aria-expanded', String(open));
+      const navToggle = document.getElementById('navToggle');
+      const mainNav = document.getElementById('mainNav');
+      if(!navToggle || !mainNav) return;
+      navToggle.addEventListener('click', ()=>{
+        const open = mainNav.classList.toggle('show');
+        navToggle.setAttribute('aria-expanded', String(open));
       });
     })();
   </script>
