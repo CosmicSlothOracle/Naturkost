@@ -129,9 +129,9 @@
     .brand-text{display:flex; flex-direction:column; line-height:1}
     .brand-title{font-weight:700; color:var(--surface)}
     .brand-sub{font-weight:700; color:var(--col-1); font-size:.9rem}
-    .tab-hint{position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); color:white; font-weight:700; font-size:clamp(48px, 8vw, 120px); opacity:0.5; animation:pulse 1.4s ease-in-out infinite; pointer-events:none; text-shadow:0 2px 8px rgba(0,0,0,0.3)}
-    .tab-hint.hide{opacity:0; transition:opacity .2s ease}
-    @keyframes pulse{0%,100%{opacity:0.5}50%{opacity:0.25}}
+    #intro video{animation:pulse 2s ease-in-out infinite}
+    #intro video.playing{animation:none}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.85}}
   </style>
 </head>
 <body>
@@ -140,7 +140,6 @@
       <source src="https://link.storjshare.io/raw/jxnzlo73fa2bjuzrostia4jl2oka/naturkost/intro.webm" type="video/webm">
       <source src="https://link.storjshare.io/raw/jxnzlo73fa2bjuzrostia4jl2oka/naturkost/intro.mp4" type="video/mp4">
     </video>
-    <div id="tabHint" class="tab-hint">TAB</div>
   </div>
   <!-- Header symmetrical -->
   <header>
@@ -273,29 +272,29 @@
     (function initIntroVideo(){
       const introEl = document.getElementById('intro');
       const vid = document.getElementById('introVid');
-      const hint = document.getElementById('tabHint');
       if(!introEl || !vid) return;
 
       // Show overlay and lock scroll
       introEl.classList.add('show');
       document.body.classList.add('intro-active');
 
-      // Ensure first frame is visible
+      // Ensure first frame is visible and paused
       const onLoaded = ()=>{
-        try{ vid.currentTime = 0; }catch(e){}
-        vid.pause();
+        try{
+          vid.currentTime = 0;
+          vid.pause();
+        }catch(e){}
       };
       vid.addEventListener('loadeddata', onLoaded, {once:true});
 
       const start = ()=>{
-        if(hint){ hint.classList.add('hide'); }
+        vid.classList.add('playing'); // Stop pulsating
         vid.preload = 'auto';
         vid.load();
         const playPromise = vid.play();
         if(playPromise && typeof playPromise.then === 'function'){
           playPromise.catch((error)=>{
             console.warn('Video playback failed:', error);
-            // Fallback: end intro if video can't play
             endIntro();
           });
         }
@@ -305,6 +304,7 @@
         document.removeEventListener('keydown', onKey);
         introEl.removeEventListener('click', onClick);
       };
+
       const onKey = (e)=>{
         if(e.key === 'Tab'){
           e.preventDefault();
@@ -312,6 +312,7 @@
           start();
         }
       };
+
       const onClick = ()=>{
         cleanupInteractions();
         start();
@@ -324,8 +325,6 @@
       if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
         endIntro();
       }
-
-      // Hint text is always "TAB" regardless of device type
 
       const endIntro = ()=>{
         introEl.classList.remove('show');
